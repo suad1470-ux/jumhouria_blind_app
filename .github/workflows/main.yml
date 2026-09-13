@@ -7,16 +7,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - run: flutter pub get
-      - run: flutter build apk --release
+      - name: Generate Android project files
+        run: flutter create --platforms=android .
 
-      - uses: actions/upload-artifact@v4
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: jumhouria-app
           path: build/app/outputs/flutter-apk/app-release.apk
